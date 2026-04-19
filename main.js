@@ -1439,9 +1439,87 @@ function saveCurrentMatch(match) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
+// PasswordOverlay
+// ════════════════════════════════════════════════════════════════════════════
+function PasswordOverlay({ onCorrect, accent }) {
+  const [input, setInput] = React.useState('');
+  const [error, setError] = React.useState(false);
+  const correctHash = "20260419"; // 簡單明文比對 (方案 A)
+
+  const check = () => {
+    if (input === correctHash) {
+      onCorrect();
+    } else {
+      setError(true);
+      setInput('');
+      setTimeout(() => setError(false), 2000);
+    }
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: 'radial-gradient(ellipse at center, #1a2533 0%, #0c1016 100%)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 20, backdropFilter: 'blur(10px)',
+    }}>
+      <div style={{
+        width: '100%', maxWidth: 360, textAlign: 'center',
+        background: '#1a2029', border: `1px solid ${error ? '#ef4444' : 'var(--line)'}`,
+        borderRadius: 20, padding: '40px 30px',
+        boxShadow: '0 40px 100px rgba(0,0,0,0.6)',
+        transition: 'all 200ms',
+        transform: error ? 'translateX(10px)' : 'none',
+      }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: 12, background: accent,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 20px', fontSize: 24, color: '#0a1a10',
+        }}>🔒</div>
+        <h2 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 8px' }}>管理員驗證</h2>
+        <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 24px' }}>請輸入管理員密鑰以開啟排點功能</p>
+        
+        <input
+          type="password"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && check()}
+          placeholder="••••••••"
+          style={{
+            width: '100%', background: '#0c1016', border: '1px solid #2a3340',
+            borderRadius: 10, padding: '12px 16px', color: '#fff',
+            fontSize: 18, textAlign: 'center', letterSpacing: 4,
+            outline: 'none', marginBottom: 16,
+          }}
+        />
+        
+        <button
+          onClick={check}
+          style={{
+            width: '100%', background: accent, border: 'none',
+            color: '#0a1a10', borderRadius: 10, padding: '12px',
+            fontSize: 14, fontWeight: 800, cursor: 'pointer',
+          }}
+        >驗證進入</button>
+        
+        {error && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 12, fontWeight: 600 }}>密碼錯誤，請再試一次</div>}
+        
+        <div style={{ marginTop: 24 }}>
+          <a href="?player" style={{ color: 'var(--dim)', fontSize: 12, textDecoration: 'none' }}>我是球員，切換至唯讀模式</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════
 // App
 // ════════════════════════════════════════════════════════════════════════════
 function App() {
+  const [authenticated, setAuthenticated] = React.useState(() => {
+    return localStorage.getItem('badminton_admin_auth') === '20260419';
+  });
+
   var [tweaks, setTweaks] = React.useState(function() {
     var t = window.__TWEAKS__ || {};
     return { theme: t.theme || 'minimal', accent: t.accent || '#8ff3b5', myName: t.myName || '' };
@@ -1453,6 +1531,9 @@ function App() {
     var p = new URLSearchParams(window.location.search);
     return p.has('player') ? 'player' : 'admin';
   }, []);
+
+  const isAdmin = role === 'admin';
+  const showLock = isAdmin && !authenticated;
 
   // ── 內部工具：將 courts 陣列轉成 match 物件，呼叫三個儲存函式 ────────────
   function saveToStorage(pList, cList, rNums) {
@@ -1552,9 +1633,9 @@ function App() {
     });
   }, []); // 只在 mount 時執行一次
 
-  // ── 球員加入網址：目前路徑 + ?player ─────────────────────────────────────
+  // ── 球員加入網址 ────────────────────────────────────────────────────────
   var playerUrl = React.useMemo(function() {
-    return window.location.origin + window.location.pathname + '?player';
+    return 'https://arku1305.github.io/badminton-with-you-scheduler/?player';
   }, []);
 
   React.useEffect(function() {
@@ -1848,6 +1929,21 @@ function App() {
       }}>
         LOADING…
       </div>
+    );
+  }
+
+  if (showLock) {
+    return (
+      <React.Fragment>
+        <PasswordOverlay
+          accent={tweaks.accent}
+          onCorrect={() => {
+            localStorage.setItem('badminton_admin_auth', '20260419');
+            setAuthenticated(true);
+          }}
+        />
+        <TweaksPanel state={tweaks} onChange={updateTweaks} show={showTweaks} />
+      </React.Fragment>
     );
   }
 
