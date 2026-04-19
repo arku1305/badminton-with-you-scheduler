@@ -1,8 +1,0 @@
-{
-  "name": "bwu-rotation",
-  "version": "1.0.0",
-  "description": "羽球排點系統",
-  "scripts": {
-    "start": "npx serve . -l 3000"
-  }
-}
