@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>排點介面</title>
+
+  <!-- 字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+:root{
+    --bg: #131820;
+    --bg-2: #1a2029;
+    --bg-3: #232b36;
+    --line: #2a3340;
+    --text: #e8ecf1;
+    --muted: #8892a0;
+    --dim: #5b6472;
+    --court: #0f5a36;
+    --court-dark: #0a4428;
+    --court-line: #f3f6fa;
+    --active: #8ff3b5;
+    --me: #eab308;
+    --accent: #8ff3b5;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter','Noto Sans TC',-apple-system,sans-serif;height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;color:inherit}
+  #root{height:100vh;width:100vw}
+  @media (max-width: 820px) and (orientation: portrait) {
+    html, body { overflow: auto; }
+    #root { height: 100dvh; }
+  }
+
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React 18 + Babel Standalone（開發用，正式部署請改用 build） -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- 全域設定 -->
+  <script>
+    const TWEAKS = /*EDITMODE-BEGIN*/{
+      "theme": "minimal",
+      "accent": "#8ff3b5",
+      "myName": ""
+    }/*EDITMODE-END*/;
+    window.__TWEAKS__ = TWEAKS;
+  </script>
+
+  <!-- 模組載入順序 -->
+  <script type="text/babel" src="defaults.js"></script>
+  <script type="text/babel" src="scheduling.js"></script>
+  <script type="text/babel" src="components/Court.js"></script>
+  <script type="text/babel" src="components/Sidebar.js"></script>
+  <script type="text/babel" src="components/TopBar.js"></script>
+  <script type="text/babel" src="components/TweaksPanel.js"></script>
+  <script type="text/babel" src="components/JoinScreen.js"></script>
+  <script type="text/babel" src="components/QRDialog.js"></script>
+  <script type="text/babel" src="app.js"></script>
+</body>
+</html>
